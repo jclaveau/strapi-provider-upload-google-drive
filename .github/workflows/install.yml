@@ -1,0 +1,27 @@
+name: Install
+on: push
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Create a Strapi Project
+        run: npx create-strapi-app@latest strapi-project --quickstart --no-run
+
+      - name: Add the plugin to the project
+        run: yarn add link:../
+        working-directory: strapi-project
+
+      - name: Configure the plugin
+        run: cp tests/config/plugins.js strapi-project/config/plugins.js
+
+      - name: Build
+        run: yarn build
+        working-directory: strapi-project
+
+
+

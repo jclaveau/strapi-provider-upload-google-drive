@@ -1,0 +1,36 @@
+{
+  "name": "strapi-provider-upload-google-drive",
+  "version": "0.5.0",
+  "description": "Store your Strapi uploads on Google Drive",
+  "strapi": {
+    "name": "upload-google-drive",
+    "description": "Store your Strapi uploads on Google Drive",
+    "kind": "plugin",
+    "displayName": "Uploads on Google Drive"
+  },
+  "main": "./provider",
+  "dependencies": {
+    "@strapi/design-system": "^1.2.1-beta.0",
+    "@strapi/icons": "^1.2.1-beta.0",
+    "googleapis": "^105.0.0",
+    "mime": "^3.0.0",
+    "p-progress": "^0.5.0"
+  },
+  "author": {
+    "name": "jclaveau",
+    "email": "jean.claveau.freelance@gmail.com",
+    "url": "https://github.com/jclaveau"
+  },
+  "maintainers": [
+    {
+      "name": "jclaveau",
+      "email": "jean.claveau.freelance@gmail.com",
+      "url": "https://github.com/jclaveau"
+    }
+  ],
+  "engines": {
+    "node": ">=14.19.1 <=16.x.x",
+    "npm": ">=6.0.0"
+  },
+  "license": "MIT"
+}

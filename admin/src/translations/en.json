@@ -1,0 +1,16 @@
+{
+  "pages.settings.header.title": "Google Drive Configuration",
+  "pages.settings.header.description": "Configure the credentials of the Google Drive provider for your uploads",
+
+
+
+  "pages.settings.form.clientSecret.placeholder": " ",
+  "pages.settings.form.clientId.placeholder": " ",
+
+
+  "pages.settings.form.setFolder.label": " ",
+  "todo.pages.settings.form.setFolder.hint": " ",
+  "todo.pages.settings.form.setFolder.placeholder": " ",
+
+  "aaa": "aaa"
+}
