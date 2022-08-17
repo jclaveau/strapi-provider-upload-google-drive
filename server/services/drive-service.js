@@ -50,11 +50,11 @@ module.exports = {
     }
 
     if (! clientId.match(/^.+$/)) {
-      throw new Error(`Invalid Client Id: ${JSON.stringify(clientId)}`)
+      throw new Error(`Invalid Google Drive OAuth Client Id: ${JSON.stringify(clientId)}`)
     }
 
     if (! clientSecret.match(/^.+$/)) {
-      throw new Error(`Invalid Client Secret: ${JSON.stringify(clientSecret)}`)
+      throw new Error(`Invalid Google Drive OAuth Client Secret: ${JSON.stringify(clientSecret)}`)
     }
 
     this.oAuth2Client = new google.auth.OAuth2(

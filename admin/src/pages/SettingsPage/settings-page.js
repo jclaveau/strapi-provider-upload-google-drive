@@ -24,27 +24,31 @@ import {
   SettingsPageTitle,
   StrapiAppContext,
   useAppInfos,
+  useStrapiApp,
   request,
 } from '@strapi/helper-plugin';
 
 
 // import permissions from '../../permissions';
 import { getMessage }  from '../../utils';
-import usePluginConfig from '../../hooks/usePluginConfig';
+import usePluginSettings from '../../hooks/usePluginSettings';
 
 import pluginId from '../../pluginId';
 
 const SettingsPage = () => {
 
+  // console.log('useAppInfos', useAppInfos())
+  // console.log('useStrapiApp', useStrapiApp())
+
   const formRef = useRef(null);
 
   const {
-    data: pluginConfigData,
-    isLoading: isConfigLoading,
-    err: configErr,
-    setConfigMutation,
-    refetchConfig,
-  } = usePluginConfig();
+    data: pluginSettingsData,
+    isLoading: isSettingsLoading,
+    err: settingsErr,
+    setSettingsMutation,
+    refetchSettings,
+  } = usePluginSettings();
 
 
   const {
@@ -58,7 +62,9 @@ const SettingsPage = () => {
     formRef?.current?.values.clientSecret,
   ], (params) => {
 
-    if (! params.queryKey[1] || ! params.queryKey[2]) {
+    if ( ! params.queryKey[1] || ! params.queryKey[1].length
+      || ! params.queryKey[2] || ! params.queryKey[2].length
+    ) {
       return
     }
 
@@ -89,17 +95,23 @@ const SettingsPage = () => {
   });
 
   const onUpdateFolderPattern = async () => {
-    await setConfigMutation({
+    await setSettingsMutation({
       driveFolderPattern: formRef?.current?.values.driveFolder
     });
 
     refetchConfig()
   }
 
-  const clientId      = pluginConfigData?.clientId;
-  const clientSecret  = pluginConfigData?.clientSecret;
-  const token         = pluginConfigData?.token;
-  const driveFolder   = pluginConfigData?.driveFolderPattern; // TODO rename
+  const clientId      = pluginSettingsData?.clientId;
+  const clientSecret  = pluginSettingsData?.clientSecret;
+  const token         = pluginSettingsData?.token;
+  const driveFolder   = pluginSettingsData?.driveFolderPattern; // TODO rename
+  const dumpSettings  = pluginSettingsData?.dumpSettings;
+
+  const clientIdFromConfig            = pluginSettingsData?.clientId_fromConfig;
+  const clientSecretFromConfig        = pluginSettingsData?.clientSecret_fromConfig;
+  const tokensFromConfig              = pluginSettingsData?.tokens_fromConfig;
+  const driveFolderPatternFromConfig  = pluginSettingsData?.driveFolderPattern_fromConfig;
 
   const boxDefaultProps = {
 		background: "neutral0",
@@ -108,7 +120,7 @@ const SettingsPage = () => {
 		padding: 6,
 	};
 
-  if (isConfigLoading || configErr) {
+  if (isSettingsLoading || settingsErr) {
     return (
       <>
         <SettingsPageTitle
@@ -116,7 +128,7 @@ const SettingsPage = () => {
         />
         <LoadingIndicatorPage>
           {/* TODO: use translation */}
-          Fetching plugin config...
+          Fetching plugin settings...
         </LoadingIndicatorPage>
       </>
     )
@@ -204,12 +216,13 @@ const SettingsPage = () => {
                             name="clientId"
                             label={getMessage('pages.settings.form.clientId.label', 'Client ID')}
                             placeholder={getMessage('pages.settings.form.clientId.placeholder', ' ')}
-                            // hint={''}
+                            hint={`You can also add it to your "config/plugin.js" as "upload-google-drive.oauth.clientId" entry`}
                             onChange={(event) => {
                               setFieldValue('clientId', event.target.value, false)
                               refetchAuthUrl()
                             }}
                             value={values.clientId}
+                            disabled={clientIdFromConfig}
                           />
                         </GridItem>
 
@@ -223,15 +236,17 @@ const SettingsPage = () => {
                               refetchAuthUrl()
                             }}
                             value={values.clientSecret}
+                            hint={`You can also add it to your "config/plugin.js" as "upload-google-drive.oauth.clientSecret" entry`}
+                            disabled={clientSecretFromConfig}
                           />
                         </GridItem>
 
                         <GridItem col={12} s={12} xs={12}>
 
-                          { pluginConfigData.tokens &&
+                          { pluginSettingsData.tokens &&
                           <Typography>
                             {getMessage('pages.settings.token.updatedOn', 'The current token has been generated on')}&nbsp;
-                            {new Date(pluginConfigData.tokens.expiry_date).toUTCString()}.&nbsp;
+                            {new Date(pluginSettingsData.tokens.expiry_date).toUTCString()}.&nbsp;
 
                           </Typography>
                           }
@@ -246,9 +261,9 @@ const SettingsPage = () => {
                           <Button
                             startIcon={<Refresh />}
                             onClick={() => {if (authUrlData?.authUrl != null) window.location = authUrlData.authUrl} }
-                            disabled={authUrlIsLoading || (! values.clientId) || (! values.clientSecret) }
+                            disabled={tokensFromConfig || authUrlIsLoading || (! values.clientId) || (! values.clientSecret) }
                           >
-                            {getMessage('pages.token.generate', 'Generate Token')}
+                            {getMessage('pages.token.generate', 'Generate New Token')}
                           </Button>
                         </GridItem>
 
@@ -294,6 +309,7 @@ const SettingsPage = () => {
                               refetchResultingFolder()
                             }}
                             value={values.driveFolder}
+                            disabled={driveFolderPatternFromConfig}
                           />
 
                           <br/>
@@ -326,6 +342,7 @@ const SettingsPage = () => {
                           <Button
                             startIcon={<Check />}
                             onClick={() => onUpdateFolderPattern()}
+                            disabled={driveFolderPatternFromConfig}
                           >
                             {getMessage('pages.settings.form.setFolder.label', 'Update folder')}
                           </Button>
@@ -385,19 +402,24 @@ const SettingsPage = () => {
                     </Stack>
                   </Box>
 
+                  { dumpSettings &&
                   <Box {...boxDefaultProps} >
                     <Stack spacing={4}>
+
+                      <Typography variant="delta" as="h2">
+                        {getMessage('pages.settings.credentials.title', 'Fetched Settings')}
+                      </Typography>
+
                       <Grid gap={4}>
                         <GridItem col={12} s={12} xs={12}>
-                          TODO : https://www.buymeacoffee.com/jeanclaveau
-
                           <pre style={ {maxWidth: '100%', overflow: 'auto', fontSize: '9pt'} }>
-                            { JSON.stringify(pluginConfigData, null, 2) }
+                            { JSON.stringify(pluginSettingsData, null, 2) }
                           </pre>
                         </GridItem>
                       </Grid>
                     </Stack>
                   </Box>
+                  }
 
                 </Stack>
               </ContentLayout>

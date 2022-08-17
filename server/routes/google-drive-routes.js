@@ -51,13 +51,4 @@ module.exports = [
       "policies": []
     }
   },
-  {
-    "method": "GET",
-    "path": "/folder-id",
-    "handler": "googleDrive.getFolderId",
-    "config": {
-      auth: false,
-      "policies": []
-    }
-  },
 ];

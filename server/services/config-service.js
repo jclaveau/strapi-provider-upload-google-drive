@@ -1,28 +1,22 @@
 'use strict';
-const pluginId = require('../../admin/src/pluginId')
 
-module.exports = {
-  async get() {
-    const store = await strapi.store({ type: 'plugin', name: pluginId });
+const uploadPluginId = 'upload'
 
-    const config = {
-      clientId: '',
-      clientSecret: '',
-      tokenInfo: '',
-      ...await store.get({ key: 'config' })
-    }
+module.exports = ({ strapi }) => {
+  return {
+    get(key=null) {
 
-    // console.log('config service: config', config)
-    return config;
-  },
+      const providerConfig = {
+        displayConfigInSettings: false,
+        dumpSettings: strapi.config.environment == 'production'
+          ? false
+          : strapi.plugin(uploadPluginId).config('dumpSettings'),
+        ...strapi.plugin(uploadPluginId).config('providerOptions')
+      }
 
-  async set(value) {
-    const store = await strapi.store({ type: 'plugin', name: pluginId });
-    await store.set({
-      key: 'config',
-      value
-    });
-
-    return 'config saved'
-  }
-}
+      return key
+        ? providerConfig[key]
+        : providerConfig
+    },
+  };
+};

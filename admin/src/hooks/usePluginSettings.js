@@ -8,19 +8,19 @@ import { getTrad } from '../translations';
 
 import pluginId from '../pluginId';
 
-const usePluginConfig = () => {
-  const queryClient = useQueryClient();
+const usePluginSettings = () => {
+  // const queryClient = useQueryClient();
   const toggleNotification = useNotification();
 
   const {
     isLoading,
     data,
     err,
-    refetch: refetchConfig,
-  } = useQuery('pluginConfig', async () => {
+    refetch: refetchSettings,
+  } = useQuery('pluginSettings', async () => {
 
     try {
-      return request(`/${pluginId}/config`, { method: 'GET' });
+      return request(`/${pluginId}/settings`, { method: 'GET' });
     } catch (err) {
       toggleNotification({
         type: 'warning',
@@ -31,18 +31,18 @@ const usePluginConfig = () => {
     }
   });
 
-  const setConfigMutation = async (...args) => {
+  const setSettingsMutation = async (...args) => {
     // console.log('setConfigMutation args', args)
-    await request(`/${pluginId}/config`, { method: 'PUT', body: args[0] }, true);
+    await request(`/${pluginId}/settings`, { method: 'PUT', body: args[0] }, true);
   }
 
   return {
     data,
     isLoading,
     err,
-    setConfigMutation,
-    refetchConfig,
+    setSettingsMutation,
+    refetchSettings,
   };
 };
 
-export default usePluginConfig;
+export default usePluginSettings;

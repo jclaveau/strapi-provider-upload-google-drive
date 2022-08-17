@@ -1,9 +1,11 @@
 'use strict';
 
-const drive = require('./drive-service');
-const config = require('./config-service');
+const config    = require('./config-service');
+const settings  = require('./settings-service');
+const drive     = require('./drive-service');
 
 module.exports = {
-  drive,
   config,
+  settings,
+  drive,
 };

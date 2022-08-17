@@ -55,7 +55,7 @@ module.exports = {
           // size: Buffer.byteLength(file.buffer),
         };
 
-        console.log('provider driveInfo', driveInfo)
+        // console.log('provider driveInfo', driveInfo)
 
         file.url = `/${pluginId}/file/${driveInfo.id}${file.ext}`;
       },

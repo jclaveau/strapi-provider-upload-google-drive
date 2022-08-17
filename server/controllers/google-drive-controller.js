@@ -3,10 +3,10 @@
 const pluginId = require('../../admin/src/pluginId')
 
 class GoogleDriveController {
-  getConfigService () {
+  getSettingsService () {
     return strapi
       .plugin(pluginId)
-      .service('config')
+      .service('settings')
   }
 
   getService() {
@@ -15,9 +15,18 @@ class GoogleDriveController {
       .service('drive')
   }
 
-  async getServiceConfigured() {
-    const driveConfig = await this.getConfigService().get();
-    return this.getService().initFromConfig(driveConfig)
+  async getServiceConfigured(validConfigurationRequired=true) {
+    const driveSettings = await this.getSettingsService().get();
+    const drive = this.getService()
+    try {
+      drive.initFromConfig(driveSettings)
+    }
+    catch (error) {
+      if (validConfigurationRequired) {
+        throw error
+      }
+    }
+    return drive
   }
 
   async index (ctx) {
@@ -35,22 +44,23 @@ class GoogleDriveController {
       )
 
       authUrl = this.getService().getAuthUrl()
+      console.log('getAuthUrl authUrl', authUrl)
     }
     catch (error) {
       return ctx.badRequest(error.message);
     }
 
-    const config = await this.getConfigService().get()
+    const settings = await this.getSettingsService().get()
 
-    config.notValidated = {  // We will save them once Auth validated
+    settings.notValidated = {  // We will save them once Auth validated
       clientId: ctx.request.query.clientId,
       clientSecret: ctx.request.query.clientSecret,
     }
 
-    // Required for redirect in watch mode
-    config.adminPort = ctx.request.header.origin?.split(':').pop()
+    // Required for redirect in watch mode (when API port differs from admin one due to proxy)
+    settings.adminPort = ctx.request.header.origin?.split(':').pop()
 
-    await this.getConfigService().set(config)
+    await this.getSettingsService().set(settings)
 
     return { authUrl }
   }
@@ -61,37 +71,40 @@ class GoogleDriveController {
       code: googleApiAuthCode
     } = ctx.request.query;
 
-    const config = await this.getConfigService().get()
+    const settings = await this.getSettingsService().get()
 
     try {
       this.getService().getOAuth2Client(
-        config.notValidatedClientId,
-        config.notValidatedClientSecret,
+        settings.notValidatedClientId,
+        settings.notValidatedClientSecret,
       )
 
       const {
-        tokenInfo,
+        // tokenInfo,
         tokens,
       } = await this.getService().redeemOAuth2Tokens(googleApiAuthCode)
 
       // Once the auth is ended (we have the token), we can save the client / secret
-      config.clientId     = config.notValidated.clientId
-      config.clientSecret = config.notValidated.clientSecret
-      config.notValidated = {}
+      settings.clientId     = settings.notValidated.clientId
+      settings.clientSecret = settings.notValidated.clientSecret
+      settings.notValidated = {}
+      // settings.tokenInfo    = tokenInfo
+      settings.tokens       = tokens
 
-      config.tokenInfo    = tokenInfo
-      config.tokens       = tokens
-
-      await this.getConfigService().set(config)
+      await this.getSettingsService().set(settings)
     }
     catch (error) {
       throw new Error(error.message)
     }
 
-    // If in watch mode and behind a proxy, the /admin port will be set by Webpack and differ from the api one
-    const currentDomain = ctx.request.header.host.split(':').shift()
-    const adminHost = currentDomain + (config.adminPort ? ':' + config.adminPort : '')
-    ctx.redirect(`//${adminHost}/bo/admin/settings/${pluginId}`);
+    if (settings.adminPort) {
+      // If in watch mode and behind a proxy, the /admin port will be set by Webpack and differ from the api one
+      const currentDomain = ctx.request.header.host.split(':').shift()
+      ctx.redirect(`//${currentDomain}:${settings.adminPort}/bo/admin/settings/${pluginId}`);
+    }
+    else {
+      ctx.redirect(`/bo/admin/settings/${pluginId}`);
+    }
   }
 
   async file (ctx) {
@@ -111,7 +124,7 @@ class GoogleDriveController {
 
   async parseFolderPath (ctx) {
     const query = ctx.request.query
-    const drive = await this.getServiceConfigured()
+    const drive = await this.getServiceConfigured(false)
 
     const defaultPattern = drive.getDefaultFolderPattern()
     const pattern = `${query.driveFolder}`.length ? query.driveFolder : defaultPattern
@@ -135,21 +148,6 @@ class GoogleDriveController {
       // env: process.env,
     }
   }
-
-  async getFolderId (ctx) {
-    // TODO delete this action
-    const query = ctx.request.query
-    const drive = await this.getServiceConfigured()
-
-    // TODO replace parts based on file info
-    const result = await drive.findPathId('/strapi/test')
-
-    return {
-      query,
-      result,
-    }
-  }
-
 };
 
 module.exports = new GoogleDriveController()
