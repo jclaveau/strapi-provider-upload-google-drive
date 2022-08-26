@@ -30,7 +30,7 @@ import {
 
 
 // import permissions from '../../permissions';
-import { getMessage }  from '../../utils';
+import { getMessage }  from '../../translations';
 import usePluginSettings from '../../hooks/usePluginSettings';
 
 import pluginId from '../../pluginId';
@@ -177,7 +177,10 @@ const SettingsPage = () => {
                               <Typography>
                                 +&nbsp;
                                 <Link href="https://developers.google.com/workspace/guides/get-started" isExternal>
-                                  {getMessage('pages.settings.projectCreation', 'You need to create a google cloud project first')}
+                                  {getMessage(
+                                    'pages.settings.credentials.requirements.createProject',
+                                    'You need to create a google cloud project first'
+                                  )}
                                 </Link>
                               </Typography>
                             </li>
@@ -185,7 +188,10 @@ const SettingsPage = () => {
                               <Typography>
                                 +&nbsp;
                                 <Link href="https://developers.google.com/workspace/guides/enable-apis" isExternal>
-                                  {getMessage('pages.settings.enableApi', 'Enable the "Google Drive API"')}
+                                  {getMessage(
+                                    'pages.settings.credentials.requirements.enableApi',
+                                    'Enable the "Google Drive API"'
+                                  )}
                                 </Link>
                               </Typography>
                             </li>
@@ -193,7 +199,10 @@ const SettingsPage = () => {
                               <Typography>
                                 +&nbsp;
                                 <Link href="https://developers.google.com/workspace/guides/create-credentials#oauth-client-id" isExternal>
-                                  {getMessage('pages.settings.createOAuthCilentIds', 'Create OAuth 2.0 Client IDs using the redirect URI below')}
+                                  {getMessage(
+                                    'pages.settings.credentials.requirements.createOAuthClientIds',
+                                    'Create OAuth 2.0 Client IDs using the redirect URI below'
+                                  )}
                                 </Link>
                               </Typography>
                             </li>
@@ -203,10 +212,15 @@ const SettingsPage = () => {
 
                           <TextInput
                             name="redirect_uris"
-                            label={getMessage('pages.settings.form.setFolder.label', `Redirect URI to add to your project's OAuth credentials`)}
+                            label={getMessage(
+                              'pages.settings.credentials.redirectUri.label',
+                              `Redirect URI to add to your project's OAuth credentials`
+                            )}
                             value={`${strapi.backendURL}/${pluginId}/google-auth-redirect-uri`}
-                            hint={`You will have to add one redirect URI per environment/domain (dev, prod, ...)`}
-
+                            hint={getMessage(
+                              'pages.settings.credentials.redirectUri.hint',
+                              `You will have to add one redirect URI per environment/domain (dev, prod, ...)`
+                            )}
                             disabled={true}
                           />
                         </GridItem>
@@ -214,9 +228,12 @@ const SettingsPage = () => {
                         <GridItem col={12} s={12} xs={12}>
                           <TextInput
                             name="clientId"
-                            label={getMessage('pages.settings.form.clientId.label', 'Client ID')}
-                            placeholder={getMessage('pages.settings.form.clientId.placeholder', ' ')}
-                            hint={`You can also add it to your "config/plugin.js" as "upload-google-drive.oauth.clientId" entry`}
+                            label={getMessage('pages.settings.credentials.clientId.label', 'Client ID')}
+                            placeholder={getMessage('pages.settings.credentials.clientId.placeholder', '')}
+                            hint={getMessage(
+                              'pages.settings.credentials.clientId.hint',
+                              `You can also add it to your "config/plugin.js" as "upload.providerOptions.clientId" entry`
+                            )}
                             onChange={(event) => {
                               setFieldValue('clientId', event.target.value, false)
                               refetchAuthUrl()
@@ -229,14 +246,17 @@ const SettingsPage = () => {
                         <GridItem col={12} s={12} xs={12}>
                           <TextInput
                             name="clientSecret"
-                            label={getMessage('pages.settings.form.clientSecret.label', 'Client Secret')}
-                            placeholder={getMessage('pages.settings.form.clientSecret.placeholder', ' ')}
+                            label={getMessage('pages.settings.credentials.clientSecret.label', 'Client Secret')}
+                            placeholder={getMessage('pages.settings.credentials.clientSecret.placeholder', '')}
+                            hint={getMessage(
+                              'pages.settings.credentials.clientSecret.hint',
+                              `You can also add it to your "config/plugin.js" as "upload.providerOptions.clientSecret" entry`
+                            )}
                             onChange={(event) => {
                               setFieldValue('clientSecret', event.target.value, false)
                               refetchAuthUrl()
                             }}
                             value={values.clientSecret}
-                            hint={`You can also add it to your "config/plugin.js" as "upload-google-drive.oauth.clientSecret" entry`}
                             disabled={clientSecretFromConfig}
                           />
                         </GridItem>
@@ -245,14 +265,14 @@ const SettingsPage = () => {
 
                           { pluginSettingsData.tokens &&
                           <Typography>
-                            {getMessage('pages.settings.token.updatedOn', 'The current token has been generated on')}&nbsp;
+                            {getMessage('pages.settings.credentials.token.generatedOn', 'The current token has been generated on')}&nbsp;
                             {new Date(pluginSettingsData.tokens.expiry_date).toUTCString()}.&nbsp;
 
                           </Typography>
                           }
 
                           <Link href="https://developers.google.com/identity/protocols/oauth2#expiration" isExternal>
-                            Google's token expiration rules
+                            {getMessage('pages.settings.credentials.token.expirationRules', "Google's token expiration rules")}&nbsp;
                           </Link>
 
                           <br/>
@@ -263,7 +283,7 @@ const SettingsPage = () => {
                             onClick={() => {if (authUrlData?.authUrl != null) window.location = authUrlData.authUrl} }
                             disabled={tokensFromConfig || authUrlIsLoading || (! values.clientId) || (! values.clientSecret) }
                           >
-                            {getMessage('pages.token.generate', 'Generate New Token')}
+                            {getMessage('pages.settings.credentials.token.generateNew', 'Generate New Token')}
                           </Button>
                         </GridItem>
 
@@ -275,37 +295,39 @@ const SettingsPage = () => {
                   <Box {...boxDefaultProps} >
                     <Stack spacing={4}>
                       <Typography variant="delta" as="h2">
-                        {getMessage('pages.settings.setFolder.title', 'Google Drive Target Folder')}
+                        {getMessage('pages.settings.targetFolder.title', 'Google Drive Target Folder')}
                       </Typography>
                       <Grid gap={4}>
                         <GridItem col={12} s={12} xs={12}>
                           <Typography>
-                            {getMessage('pages.settings.setFolder.description', 'Define the Google Drive folder in which you want to store your uploads')}
+                            {getMessage(
+                              'pages.settings.targetFolder.description',
+                              'Define the Google Drive folder in which you want to store your uploads'
+                            )}
                           </Typography>
                         </GridItem>
                         <GridItem col={12} s={12} xs={12}>
 
                           <TextInput
                             name="driveFolder"
-                            label={getMessage('pages.settings.form.setFolder.label', 'Target Folder Pattern')}
+                            label={getMessage('pages.settings.targetFolder.pattern.label', 'Target Folder Pattern')}
                             placeholder={ resultingFolderData?.defaultPattern }
                             hint={
                               <span>
                                 - {getMessage(
-                                  'pages.settings.form.setFolder.hint.variables',
+                                  'pages.settings.targetFolder.pattern.hint.variables',
                                   'The variables listed below can be inserted using the following syntax: '
                                 )}
                                 {'{{ package.name | env | ... }}'}.
                                 <br/>
                                 - {getMessage(
-                                  'pages.settings.form.setFolder.hint.root',
+                                  'pages.settings.targetFolder.pattern.hint.root',
                                   'Type "/" to store your uploads at the root of your drive'
                                 )}
                               </span>
                             }
                             onChange={(event) => {
                               setFieldValue('driveFolder', event.target.value, false)
-                              // onUpdateDriveFolderTemplate()
                               refetchResultingFolder()
                             }}
                             value={values.driveFolder}
@@ -317,22 +339,22 @@ const SettingsPage = () => {
 
                           <TextInput
                             name="driveFolderResult"
-                            label={getMessage('pages.settings.form.setFolder.label', 'Target Folder Result')}
-                            placeholder={getMessage('pages.settings.form.setFolder.placeholder', 'Please set a folder pattern')}
+                            label={getMessage('pages.settings.targetFolder.result.label', 'Target Folder Result')}
+                            placeholder={getMessage('pages.settings.targetFolder.result.placeholder', 'Please set a folder pattern')}
                             hint={
                               <span>
                                 - {getMessage(
-                                  'pages.settings.form.driveFolderResult.hint.creation',
+                                  'pages.settings.targetFolder.result.hint.creation',
                                   'The folder will be created on your drive during the next upload. '
                                 )}
                                 <br/>
                                 - {getMessage(
-                                  'pages.settings.form.driveFolderResult.hint.noBreak',
+                                  'pages.settings.targetFolder.result.hint.noBreak',
                                   'Changing the folder will not break your existing uploads. You can move them manually, if you want, in Drive with no fear.'
                                 )}
                               </span>
                             }
-                            value={! resultingFolderIsLoading ? resultingFolderData?.result : 'loading...'}
+                            value={! resultingFolderIsLoading ? resultingFolderData?.result : getMessage('pages.settings.loading', 'Loading...')}
                             disabled={true}
                           />
 
@@ -344,7 +366,7 @@ const SettingsPage = () => {
                             onClick={() => onUpdateFolderPattern()}
                             disabled={driveFolderPatternFromConfig}
                           >
-                            {getMessage('pages.settings.form.setFolder.label', 'Update folder')}
+                            {getMessage('pages.settings.targetFolder.result.updateFolder', 'Update Target Folder')}
                           </Button>
 
                         </GridItem>
@@ -365,7 +387,12 @@ const SettingsPage = () => {
                               <Thead>
                                 <Tr style={ {padding: '5px'} }>
                                   <Th colSpan={2} style={ {textAlign: 'center'} }>
-                                    <Typography variant="sigma">Available Variables</Typography>
+                                    <Typography variant="sigma">
+                                      {getMessage(
+                                        'pages.settings.targetFolder.result.availableVariables',
+                                        'Available Variables'
+                                      )}
+                                    </Typography>
                                   </Th>
                                 </Tr>
                               </Thead>
@@ -379,7 +406,7 @@ const SettingsPage = () => {
                               { ! resultingFolderData?.availableVariables &&
                                 <Tr key={0}>
                                   <Td style={ {padding: '5px'} }>
-                                    Loading...
+                                  {getMessage('pages.settings.loading', 'Loading...')}
                                   </Td>
                                 </Tr>
                               }
@@ -407,7 +434,7 @@ const SettingsPage = () => {
                     <Stack spacing={4}>
 
                       <Typography variant="delta" as="h2">
-                        {getMessage('pages.settings.credentials.title', 'Fetched Settings')}
+                        {getMessage('pages.settings.dump.title', 'Fetched Settings')}
                       </Typography>
 
                       <Grid gap={4}>

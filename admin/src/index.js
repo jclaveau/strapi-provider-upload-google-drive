@@ -1,9 +1,9 @@
 import { prefixPluginTranslations } from '@strapi/helper-plugin';
 import pluginPkg from '../../package.json';
 import pluginId from './pluginId';
-import Initializer from './components/Initializer';
-import PluginIcon from './components/PluginIcon';
-import { getTrad } from './translations';
+// import Initializer from './components/Initializer';
+// import PluginIcon from './components/PluginIcon';
+import { getTradObject } from './translations';
 
 const name = pluginPkg.strapi.displayName;
 
@@ -41,14 +41,11 @@ export default {
     app.createSettingSection(
       {
         id: pluginId,
-        intlLabel: { id: getTrad('pages.settings.section.title'), defaultMessage: name },
+        intlLabel: getTradObject('pages.settings.section.title', name),
       },
       [
         {
-          intlLabel: {
-            id: getTrad('pages.settings.section.subtitle'),
-            defaultMessage: 'Configuration',
-          },
+          intlLabel: getTradObject('pages.settings.section.subtitle', 'Configuration'),
           id: 'navigation',
           to: `/settings/${pluginId}`,
           Component: async () => {

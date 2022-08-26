@@ -1,16 +1,57 @@
 {
+
+
+  "pages.settings.section.title": "Google Drive Uploads",
+  "pages.settings.section.subtitle": "Configuration",
+
+
   "pages.settings.header.title": "Google Drive Configuration",
   "pages.settings.header.description": "Configure the credentials of the Google Drive provider for your uploads",
 
+  "pages.settings.loading": "Loading...",
 
 
-  "pages.settings.form.clientSecret.placeholder": " ",
-  "pages.settings.form.clientId.placeholder": " ",
+
+  "pages.settings.credentials.title": "Google OAuth2 Credentials",
+  "pages.settings.credentials.requirements.createProject": "You need to create a google cloud project first",
+  "pages.settings.credentials.requirements.enableApi": "Enable the \"Google Drive API\"",
+  "pages.settings.credentials.requirements.createOAuthClientIds": "Create OAuth 2.0 Client IDs using the redirect URI below",
+
+  "pages.settings.credentials.redirectUri.label": "Redirect URI to add to your project's OAuth credentials",
+  "pages.settings.credentials.redirectUri.hint": "You will have to add one redirect URI per environment/domain (dev, prod, ...)",
+
+  "pages.settings.credentials.clientId.label": "Client ID",
+  "pages.settings.credentials.clientId.placeholder": "",
+  "pages.settings.credentials.clientId.hint": "You can also add it to your \"config/plugin.js\" as \"upload-google-drive.oauth.clientId\" entry",
+
+  "pages.settings.credentials.clientSecret.label": "Client Secret",
+  "pages.settings.credentials.clientSecret.placeholder": "",
+  "pages.settings.credentials.clientSecret.hint": "You can also add it to your \"config/plugin.js\" as \"upload-google-drive.oauth.clientId\" entry",
+
+  "pages.settings.credentials.token.generatedOn": "The current token has been generated on",
+  "pages.settings.credentials.token.expirationRules": "Google's token expiration rules",
+  "pages.settings.credentials.token.generateNew": "Generate New Token",
 
 
-  "pages.settings.form.setFolder.label": " ",
-  "todo.pages.settings.form.setFolder.hint": " ",
-  "todo.pages.settings.form.setFolder.placeholder": " ",
+
+  "pages.settings.targetFolder.title": "Google Drive Target Folder",
+  "pages.settings.targetFolder.description": "Define the Google Drive folder in which you want to store your uploads",
+
+  "pages.settings.targetFolder.pattern.label": "Target Folder Pattern",
+  "pages.settings.targetFolder.pattern.hint.variables": "The variables listed below can be inserted using the following syntax: ",
+  "pages.settings.targetFolder.pattern.hint.root": "Type \"/\" to store your uploads at the root of your drive",
+
+  "pages.settings.targetFolder.result.label": "Target Folder Result",
+  "pages.settings.targetFolder.result.placeholder": "Please set a folder pattern",
+  "pages.settings.targetFolder.result.hint.creation": "The folder will be created on your drive during the next upload. ",
+  "pages.settings.targetFolder.result.hint.noBreak": "Changing the folder will not break your existing uploads. You can move them manually, if you want, in Drive with no fear.",
+  "pages.settings.targetFolder.result.updateFolder": "Update Target Folder",
+  "pages.settings.targetFolder.result.availableVariables": "Available Variables",
+
+
+  "pages.settings.dump.title": "Fetched Settings",
+
+
 
   "aaa": "aaa"
 }

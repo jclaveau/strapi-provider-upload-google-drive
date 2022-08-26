@@ -1,15 +1,19 @@
-// import pluginId from "../pluginId";
 import en from "./en.json";
 import fr from "./fr.json";
+import {
+  getTrad,
+  getTradObject,
+  getMessage,
+} from "./translations";
 
-const pluginId = 'todo'
+export {
+  getTrad,
+  getTradObject,
+  getMessage,
+}
 
 const trads = {
 	en,
 	fr,
 };
-
-export const getTradId = (msg) => `${pluginId}.${msg}`;
-export const getTrad = (msg) => ({id: getTradId(msg)});
-
 export default trads;
