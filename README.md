@@ -10,7 +10,6 @@ Store your Strapi uploads on Google Drive
 
 ### TODO
 + HTTP cache handling
-+ Translations
 + e2e tests
 
 ### Usage

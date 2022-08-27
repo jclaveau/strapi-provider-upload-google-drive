@@ -1,1 +1,52 @@
-{}
+{
+  "pages.settings.section.title": "Google Drive Uploads",
+  "pages.settings.section.subtitle": "Configuration",
+
+
+  "pages.settings.header.title": "Configuration de Google Drive",
+  "pages.settings.header.description": "Configuration des accès du Provider Google Drive pour vos fichiers",
+
+  "pages.settings.loading": "Chargement...",
+
+
+  "pages.settings.credentials.title": "Identification Google OAuth2",
+  "pages.settings.credentials.requirements.createProject": "Vous devez créer un projet sur Google Cloud au préallable",
+  "pages.settings.credentials.requirements.enableApi": "Y autoriser la \"Google Drive API\"",
+  "pages.settings.credentials.requirements.createOAuthClientIds": "Utiliser l'URI de redirection plus bas lors de la création de vos identifiants OAuth 2.0",
+
+  "pages.settings.credentials.redirectUri.label": "URI de redirection à ajouter à vos identifiants OAuth",
+  "pages.settings.credentials.redirectUri.hint": "Vous devrez ajouter une URI de redirection par environnementt/domaine (dev, prod, ...)",
+
+  "pages.settings.credentials.clientId.label": "ID Client",
+  "pages.settings.credentials.clientId.placeholder": "",
+  "pages.settings.credentials.clientId.hint": "Vous pouvez aussi le spécifier dans \"config/plugin.js\" entant que \"upload.config.providerOptions.clientId\"",
+
+  "pages.settings.credentials.clientSecret.label": "Code secret du Client",
+  "pages.settings.credentials.clientSecret.placeholder": "",
+  "pages.settings.credentials.clientSecret.hint": "Vous pouvez aussi le spécifier dans \"config/plugin.js\" entant que \"upload.config.providerOptions.clientId\" entry",
+
+  "pages.settings.credentials.token.generatedOn": "Le jeton actuel a été généré le",
+  "pages.settings.credentials.token.expirationRules": "Règles d'expiration du jeton Google",
+  "pages.settings.credentials.token.generateNew": "Générer un Nouveau Jeton",
+
+
+  "pages.settings.targetFolder.title": "Dossier Cible sur Google Drive",
+  "pages.settings.targetFolder.description": "Définissez le dossier dans lequel vous voulez stocker vos fichiers",
+
+  "pages.settings.targetFolder.pattern.label": "Patron de dossier cible",
+  "pages.settings.targetFolder.pattern.hint.variables": "Les variables listées plus bas peuvent être insérées selon la syntaxe suivante :",
+  "pages.settings.targetFolder.pattern.hint.root": "Tapez \"/\" si vous voulez stocker vos fichiers à la racine de votre Drive",
+
+  "pages.settings.targetFolder.result.label": "Dossier cible résultant",
+  "pages.settings.targetFolder.result.placeholder": "Veuillez définir un patron de dossier cible",
+  "pages.settings.targetFolder.result.hint.creation": "Le dossier sera créé sur votre Drive lors du prochain envoi",
+  "pages.settings.targetFolder.result.hint.noBreak": "Changer le dossier cible ne brisera pas vos envois existants. Vous pourrez les déplacer manuellement, si vous le voulez, sans risque.",
+  "pages.settings.targetFolder.result.updateFolder": "Enregistrer le Dossier Cible",
+  "pages.settings.targetFolder.result.availableVariables": "Variables Disponibles",
+
+  "pages.settings.dump.title": "Paramètres Récupérées",
+
+
+
+  "aaa": "aaa"
+}

@@ -22,11 +22,11 @@
 
   "pages.settings.credentials.clientId.label": "Client ID",
   "pages.settings.credentials.clientId.placeholder": "",
-  "pages.settings.credentials.clientId.hint": "You can also add it to your \"config/plugin.js\" as \"upload-google-drive.oauth.clientId\" entry",
+  "pages.settings.credentials.clientId.hint": "You can also add it to your \"config/plugin.js\" as \"upload.config.providerOptions.clientId\" entry",
 
   "pages.settings.credentials.clientSecret.label": "Client Secret",
   "pages.settings.credentials.clientSecret.placeholder": "",
-  "pages.settings.credentials.clientSecret.hint": "You can also add it to your \"config/plugin.js\" as \"upload-google-drive.oauth.clientId\" entry",
+  "pages.settings.credentials.clientSecret.hint": "You can also add it to your \"config/plugin.js\" as \"upload.config.providerOptions.clientId\" entry",
 
   "pages.settings.credentials.token.generatedOn": "The current token has been generated on",
   "pages.settings.credentials.token.expirationRules": "Google's token expiration rules",
