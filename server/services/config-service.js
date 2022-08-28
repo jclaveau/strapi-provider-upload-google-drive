@@ -11,6 +11,7 @@ module.exports = ({ strapi }) => {
         dumpSettings: strapi.config.environment == 'production'
           ? false
           : strapi.plugin(uploadPluginId).config('dumpSettings'),
+        localUploadFolder: '/drive',
         ...strapi.plugin(uploadPluginId).config('providerOptions')
       }
 

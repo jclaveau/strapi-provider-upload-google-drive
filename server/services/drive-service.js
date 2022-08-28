@@ -32,7 +32,7 @@ module.exports = {
       auth: this.oAuth2Client
     });
 
-    this.logger = strapi.log;
+    this.logger = strapi.log; // TODO used?
 
     return this
   },
@@ -197,7 +197,6 @@ module.exports = {
 
   async getFolderId(name, parentId='root') {
     // https://developers.google.com/drive/api/guides/search-files
-    // console.log('getFolderId', name, parentId)
 
     const listQueryParams = {
       q: [
@@ -248,7 +247,7 @@ module.exports = {
       folderId = createResult.data.id
     }
     else {
-      console.log(`More than one folder named '${name}' having the parent '${parentId}' found. Using the first created one`)
+      strapi.log.warn(`More than one folder named '${name}' having the parent '${parentId}' found. Using the first created one`)
       folderId = result.data.files[0].id
     }
 
@@ -380,79 +379,91 @@ module.exports = {
   //   return data.downloadUrl;
   // },
 
-  async downloadFile(googleFileId, extension) {
-    // Writing in the punlic folder avoids server restarts in watch dev mode
-    const cachePath = path.resolve(strapi.dirs.public + '/uploads/cache')
+  getCacheFolderPath() {
+    const cacheFolderPath = path.resolve(strapi.dirs.public + '/uploads' + this.config.localUploadFolder)
+    return cacheFolderPath
+  },
+
+  getFileCachePath(fileName) {
+    // Writing in the public folder avoids server restarts in watch dev mode
+    const cachePath = this.getCacheFolderPath()
     if (! fs.existsSync(cachePath)) {
-      fs.mkdir(cachePath, (err) => {
+      fs.mkdir(cachePath, (error) => {
         if (error) {
           throw new Error(error)
         }
-        console.log('Cache directory created successfully: ' + cachePath);
+        strapi.log.info('Cache directory created successfully: ' + cachePath);
       });
     }
 
-    const cacheFile = path.resolve(cachePath, googleFileId + '.' + extension)
-    if (fs.existsSync(cacheFile)) {
-      const cacheData = fs.readFileSync(cacheFile)
-      const mimeType = mime.getType(extension)
+    const cacheFilePath = path.resolve(cachePath, fileName)
 
-      // TODO add HTTP cache headers
-      // cache-control	"private, max-age=0, must-revalidate"
-      // connection	"close"
-      // content-disposition	"attachment"
-      // content-length	"10730"
-      // content-type	"image/jpeg"
-      // date	"Mon, 25 Jul 2022 14:30:18 GMT"
-      // expires	"Mon, 25 Jul 2022 14:30:18 GMT"
-      return {
-        headers: {
-          'content-type': mimeType,
+    return cacheFilePath
+  },
+
+  async getFilePath(fileBase) {
+    const cacheFilePath = this.getFileCachePath(fileBase)
+
+    if (fs.existsSync(cacheFilePath)) {
+      return cacheFilePath
+    }
+
+    const googleFileId = this.getFileIdFromBase(fileBase)
+
+    try {
+      const result = await this.drive.files.get(
+        {
+          fileId: googleFileId,
+          alt: 'media'
         },
-        data: cacheData
+        {
+          responseType: 'arraybuffer'
+        },
+      )
+
+      fs.writeFile(cacheFilePath, Buffer.from(result.data),
+        'base64',
+        function (writeError) {
+          if (writeError) {
+            return console.log(writeError);
+          }
+        }
+      );
+    }
+    catch (error) {
+      if (error.response?.status == 404) {
+        strapi.log.error(`Unable to find '${fileName}' having the id '${googleFileId}' on Google Drive`)
+        return null
       }
+      throw error
     }
 
-    const result = await this.drive.files.get(
-      {
-        fileId: googleFileId,
-        alt: 'media'
-      },
-      {
-        responseType: 'arraybuffer'
-      },
-    )
-
-    // Buffer must be copied to be written in the cache file
-    // AND responsed by the current http request
-    result.data = Buffer.from(result.data)
-
-    fs.writeFile(cacheFile, Buffer.from(result.data),
-      'base64',
-      function (writeError) {
-        if (writeError) {
-          return console.log(writeError);
-        }
-      }
-    );
-
-    return result
+    return cacheFilePath
   },
 
-  async delete(googleFileId, extension) {
-    // console.log('delete googleFileId', googleFileId)
-
+  async delete(fileBase) {
+    const googleFileId = this.getFileIdFromBase(fileBase)
     this.drive.files.delete({ fileId: googleFileId });
+    strapi.log.info(`Google Drive file removed: '${googleFileId}'`)
 
-    const cachePath = path.resolve(strapi.dirs.public + '/uploads/cache')
-    const cacheFile = path.resolve(cachePath, googleFileId + extension)
-    if (fs.existsSync(cacheFile)) {
-      fs.unlink(cacheFile, (error) => {
+    const cacheFilePath = this.getFileCachePath(fileBase)
+    if (fs.existsSync(cacheFilePath)) {
+      fs.unlink(cacheFilePath, (error) => {
         if (error) {
           throw new Error(error)
         }
+        strapi.log.info(`Google Drive cache file removed: '${cacheFilePath}'`)
       });
     }
-
   },
+
+  getFileIdFromBase(fileBase) {
+    // https://stackoverflow.com/a/52822722/2714285
+    const parsedFileName = path.parse(fileBase, true);
+    const googleFileId = parsedFileName.name.replace(/^(.+)~([^~]+)$/, (match, fileName, googleDriveFileId) => {
+      return googleDriveFileId
+    })
+
+    return googleFileId
+  }
 };

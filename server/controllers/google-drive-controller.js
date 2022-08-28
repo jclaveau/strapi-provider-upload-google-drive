@@ -1,7 +1,7 @@
 'use strict';
 
 const pluginId = require('../../admin/src/pluginId')
-
+const send = require('koa-send')
 class GoogleDriveController {
   getSettingsService () {
     return strapi
@@ -110,15 +110,17 @@ class GoogleDriveController {
   async file (ctx) {
     const drive = await this.getServiceConfigured()
 
-    const [
-      googleFileId, extension
-    ] = ctx.params.filename.split('.')
+    const opts = {
+      maxAge: 60000,
+      // TODO to provider options or retrieve it from the uploads config?
+      // https://docs.strapi.io/developer-docs/latest/setup-deployment-guides/configurations/required/server.html#available-options
+      // https://docs.strapi.io/developer-docs/latest/setup-deployment-guides/configurations/required/middlewares.html#internal-middlewares-configuration-reference
+    }
 
-    // return await drive.downloadFile(googleFileId, extension)
-    const file = await drive.downloadFile(googleFileId, extension)
-
-    ctx.type = file.headers['content-type']
-    ctx.body = file.data
+    const cachedFilePath = await drive.getFilePath(ctx.params.filename)
+    if (cachedFilePath) {
+      await send(ctx, cachedFilePath.replace(strapi.dirs.root, ''), opts)
+    }
   }
 
 
