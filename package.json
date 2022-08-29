@@ -5,7 +5,7 @@
   "strapi": {
     "name": "upload-google-drive",
     "description": "Store your Strapi uploads on Google Drive",
-    "kind": "provider",
+    "kind": "plugin",
     "displayName": "Uploads on Google Drive"
   },
   "main": "./provider",
