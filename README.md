@@ -4,6 +4,9 @@ Store your Strapi uploads on Google Drive
 [![Install](https://github.com/jclaveau/strapi-provider-upload-google-drive/actions/workflows/install.yml/badge.svg)](https://github.com/jclaveau/strapi-provider-upload-google-drive/actions/workflows/install.yml)
 [![Audit](https://github.com/jclaveau/strapi-provider-upload-google-drive/actions/workflows/audit.yml/badge.svg)](https://github.com/jclaveau/strapi-provider-upload-google-drive/actions/workflows/audit.yml)
 
+This plugin is meant to store the content of your medialibrary on Google Drive. While accessed those files are copied locally
+to avoid massive slow calls on the Google Drive API. This allows to spawn Strapi instances not having persistent storage for free.
+
 ### Features
 + Settings page to configure your OAuth credentials easily
 + Google Drive target folder based on variables
@@ -15,6 +18,7 @@ Store your Strapi uploads on Google Drive
 + Better config/Settings for cache folder, maxAge...
 + Switch to ESM?
 + Other translations
++ [Look at the issues!](https://github.com/jclaveau/strapi-provider-upload-google-drive/issues)
 
 ### Usage
 ```
