@@ -45,6 +45,7 @@
   "pages.settings.targetFolder.result.availableVariables": "Variables Disponibles",
 
   "pages.settings.dump.title": "Paramètres Récupérées",
+  "pages.settings.dump.notInProduction": "NB : Cette section sera automatiquement cachée en production",
 
 
 

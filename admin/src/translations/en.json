@@ -50,6 +50,7 @@
 
 
   "pages.settings.dump.title": "Fetched Settings",
+  "pages.settings.dump.notInProduction": "NB: This section will be automatically hidden in production environment",
 
 
 

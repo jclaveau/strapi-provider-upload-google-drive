@@ -1,7 +1,3 @@
-// https://www.npmjs.com/package/strapi-provider-upload-google-drive
-// https://docs.strapi.io/developer-docs/latest/development/providers.html#installing-providers
-
-
 const pluginId = require('../admin/src/pluginId')
 const path = require('path')
 
@@ -11,26 +7,22 @@ module.exports = {
 
     const getDriveService = async () => {
       driveSettings = await strapi.plugin(pluginId).service('settings').get();
-      // console.log('provider driveSettings', driveSettings)
       return strapi.plugin(pluginId).service('drive').initFromConfig(driveSettings)
     }
 
 
     const getDriveFolderId = async (drive, file) => {
       const driveFolderPattern = drive.getFolderPattern()
-      // console.log('uploadStream() driveFolderPattern', driveFolderPattern)
 
       const availableVariablesSourceOfValues = {
         file,
         providerConfig: providerOptions.folderPatternVariables
       }
+
       const driveFolderPath = drive.getFolderPath(driveFolderPattern, availableVariablesSourceOfValues)
-      // console.log(`Uploading ${file.name} to ${driveFolderPath}`)
       strapi.log.info(`Uploading ${file.name} to ${driveFolderPath}`)
-      // console.log('uploadStream() driveFolderPath', driveFolderPath)
 
       const driveFolderId = await drive.findPathId(driveFolderPath)
-      // console.log('uploadStream() driveFolderId', driveFolderId)
       return driveFolderId
     }
 
@@ -72,10 +64,10 @@ module.exports = {
             strapi.log.error(err.message);
           });
 
-          // TODO delete empty folders
-        } catch (err) {
-          strapi.log.error(err.message);
-          throw err
+          // TODO delete folder on Drive if empty
+        } catch (error) {
+          strapi.log.error(error.message);
+          throw error
         }
       },
     };

@@ -437,6 +437,13 @@ const SettingsPage = () => {
                         {getMessage('pages.settings.dump.title', 'Fetched Settings')}
                       </Typography>
 
+                      <Typography>
+                        {getMessage(
+                          'pages.settings.dump.notInProduction',
+                          'NB: This section will be automatically hidden in production environment'
+                        )}
+                      </Typography>
+
                       <Grid gap={4}>
                         <GridItem col={12} s={12} xs={12}>
                           <pre style={ {maxWidth: '100%', overflow: 'auto', fontSize: '9pt'} }>

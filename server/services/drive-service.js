@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const { Readable } = require('stream');
 const { google } = require('googleapis');
-const mime = require('mime');
 const PProgress = require('p-progress');
 
 // https://developers.google.com/drive/api/guides/about-sdk
@@ -31,8 +30,6 @@ module.exports = {
       version: 'v3',
       auth: this.oAuth2Client
     });
-
-    this.logger = strapi.log; // TODO used?
 
     return this
   },
@@ -114,20 +111,9 @@ module.exports = {
   },
 
   getAvailableFolderVariables() {
-    // TODO get variables from the provider config
-
-    // name: 'small_IMG_20220405_185848.jpg',
-    // hash: 'small_IMG_20220405_185848_46dccfe0b9',
-    // ext: '.jpg',
-    // mime: 'image/jpeg',
-    // path: null,
-    // getStream: [Function: getStream],
-    // width: 500,
-    // height: 375,
-    // size: 45.74,
+    // TODO get variables from the provider config?
 
     const resolveAtUpload = (customizer) => {
-
       // Naming this function is required!
       const doResolvedAtUpload = function(variableName, values=null) {
         return customizer(variableName, values)
@@ -225,16 +211,12 @@ module.exports = {
       ].join(','),
       // spaces: 'drive',
 
-      // orderBy: "name",
       orderBy: "createdTime",
       includeItemsFromAllDrives: true,
       supportsAllDrives: true,
     }
 
-    // console.log('listQueryParams', listQueryParams)
-
     const result = await this.drive.files.list(listQueryParams)
-
     // console.log('getFolderId() result.data.files', result.data.files)
 
     let folderId
@@ -243,7 +225,6 @@ module.exports = {
     }
     else if (result.data.files.length == 0) {
       const createResult = await this.createFolder(name, parentId)
-      // console.log('createResult', createResult)
       folderId = createResult.data.id
     }
     else {
@@ -255,7 +236,6 @@ module.exports = {
   },
 
   async createFolder(name, parentId=null) {
-
     return this.drive.files.create({
       requestBody: {
         name: name,
@@ -266,63 +246,41 @@ module.exports = {
     })
   },
 
-
-  // setThrottle(bytes = 0) {
-  //   if (bytes) {
-  //     this.tg = new ThrottleGroup({rate: bytes});
-  //   } else {
-  //     this.tg = null;
-  //   }
-
-  //   return this;
-  // },
-
-  bufferToStream(binary) {
-    const readableInstanceStream = new Readable({
-      read() {
-        this.push(binary);
-        this.push(null);
-      }
-    });
-
-    return readableInstanceStream;
-  },
-
   uploadBuffer(file, parents=[]) {
-    const { name, ext, mime, buffer, folderId } = file;
-
-    console.log('uploadBuffer file', file)
-
-    // TODO https://developers.google.com/drive/api/guides/folder#create
-    // if (folderId) {
-    //   fileMetadata.parents = [folderId];
-    // }
-
-    const body = Buffer.from(buffer);
+    const body = Buffer.from(file.buffer);
     const size = Buffer.byteLength(body);
 
     return new PProgress(async (resolve, reject, progress) => {
-      this.drive.files.create({
-        requestBody: {
-          name: file.name,
-          mimeType: file.mime,
-          parents: parents, // https://developers.google.com/drive/api/guides/folder#create
+      this.drive.files.create(
+        {
+          requestBody: {
+            name: file.name,
+            mimeType: file.mime,
+            parents: parents, // https://developers.google.com/drive/api/guides/folder#create
+          },
+          media: {
+            mimeType: file.mime,
+            body: new Readable({
+              read() {
+                this.push(file.buffer);
+                this.push(null);
+              }
+            }),
+          }
         },
-        media: {
-          mimeType: file.mime,
-          body: this.bufferToStream(file.buffer)
+        {
+          onUploadProgress: (evt) => {
+            progress(evt.bytesRead / size);
+          }
+        },
+        (err, data) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(data.data);
+          }
         }
-      }, {
-        onUploadProgress: (evt) => {
-          progress(evt.bytesRead / size);
-        }
-      }, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data.data);
-        }
-      });
+      );
     });
   },
 
@@ -367,17 +325,6 @@ module.exports = {
 
     });
   },
-
-
-  // async getDownloadUrl(fileId) {
-  //   const { data, headers, config } = await this.oAuth2Client.request({
-  //     url: `https://www.googleapis.com/drive/v2/files/${fileId}`
-  //   });
-
-  //   // console.log('getDownloadUrl url', data.downloadUrl)
-
-  //   return data.downloadUrl;
-  // },
 
   getCacheFolderPath() {
     const cacheFolderPath = path.resolve(strapi.dirs.public + '/uploads' + this.config.localUploadFolder)
