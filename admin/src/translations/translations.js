@@ -8,7 +8,7 @@ const getTrad = (id, inPluginScope = true) => `${inPluginScope ? pluginId : 'app
 const getTradObject = (id, defaultMessage = '', inPluginScope = true) => {
   return {
     id: getTrad(id, inPluginScope),
-    defaultMessage: `TOTRAD: ${defaultMessage}`,
+    defaultMessage: `TOTRAD: ${id} "${defaultMessage}"`,
   }
 }
 
