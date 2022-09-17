@@ -1,6 +1,5 @@
 // @ts-check
 const { devices } = require('@playwright/test');
-
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -13,6 +12,7 @@ const { devices } = require('@playwright/test');
  * @type {import('@playwright/test').PlaywrightTestConfig}
  */
 const config = {
+  globalSetup: require.resolve('./tests/playwright/global-setup'),
   testDir: './tests/playwright',
   /* Maximum time one test can run for. */
   timeout: 30 * 1000,
@@ -43,6 +43,12 @@ const config = {
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+
+    /** Only take screenshot on failure */
+    screenshot: 'only-on-failure',
+
+    /** Record video, but only keep it in case of failure */
+    video: 'retain-on-failure',
   },
 
   /* Configure projects for major browsers */

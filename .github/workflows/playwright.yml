@@ -1,13 +1,16 @@
 name: e2e Tests
 on: push
-# on:
-#   push:
-#     branches: [ main, master ]
-#   pull_request:
-#     branches: [ main, master ]
+
+env:
+  GCLOUD_CLIENT_ID: ${{ secrets.GCLOUD_CLIENT_ID }}
+  GCLOUD_CLIENT_SECRET: ${{ secrets.GCLOUD_CLIENT_SECRET }}
+  GMAIL_EMAIL: ${{ secrets.GMAIL_EMAIL }}
+  GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
+  # NODE_ENV: development
+
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -18,34 +21,24 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
-    # - uses: browser-actions/setup-firefox@latest
-    # - run: firefox --version
-
     - name: Create testing project
       run: yarn test:create-project
 
     - name: Start server
-      run: yarn test:start
+      run: yarn test:start --no-log
+
+    - name: Dump logs once the tests ended
+      uses: webiny/action-post-run@2.0.1
+      id: dump-pm2-logs
+      with:
+        run: yarn pm2 logs --nostream --lines 100000 test-project
 
     - name: Run tests
       run: yarn test
 
-
-
-
-
-    # - uses: actions/setup-node@v2
-    #   with:
-    #     node-version: '16.x'
-    # - name: Install dependencies
-    #   run: yarn
-    # - name: Install Playwright Browsers
-    #   run: npx playwright install --with-deps
-    # - name: Run Playwright tests
-    #   run: yarn playwright test
-    # - uses: actions/upload-artifact@v2
-    #   if: always()
-    #   with:
-    #     name: playwright-report
-    #     path: playwright-report/
-    #     retention-days: 30
+    - uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: test-results
+        path: test-results/
+        retention-days: 2

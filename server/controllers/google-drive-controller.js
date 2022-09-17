@@ -2,6 +2,7 @@
 
 const pluginId = require('../../admin/src/pluginId')
 const send = require('koa-send')
+const url = require('url')
 class GoogleDriveController {
   getSettingsService () {
     return strapi
@@ -37,13 +38,18 @@ class GoogleDriveController {
 
   async getAuthUrl(ctx) {
     let authUrl
+
     try {
       this.getService().getOAuth2Client(
         ctx.request.query?.clientId,
         ctx.request.query?.clientSecret,
+        'http://' + ctx.request.header.host,
       )
 
       authUrl = this.getService().getAuthUrl()
+
+      const preferedLanguage = ctx.state.user.preferedLanguage ?? 'en'
+      authUrl += '&hl=' + preferedLanguage // Forcing Google's language is required for e2e tests to run
       console.log('getAuthUrl authUrl', authUrl)
     }
     catch (error) {
@@ -75,8 +81,9 @@ class GoogleDriveController {
 
     try {
       this.getService().getOAuth2Client(
-        settings.notValidatedClientId,
-        settings.notValidatedClientSecret,
+        settings.notValidated.clientId,
+        settings.notValidated.clientSecret,
+        'http://' + ctx.request.header.host,
       )
 
       const {
@@ -94,16 +101,24 @@ class GoogleDriveController {
       await this.getSettingsService().set(settings)
     }
     catch (error) {
+      console.log(error)
+      // Message handling buggy due to specific Google Axios Exception?
       throw new Error(error.message)
+    }
+
+    let basePath = ''
+    if (strapi.config.server.url) {
+      const serverUrlParts = url.parse(strapi.config.server.url)
+      basePath = serverUrlParts.path
     }
 
     if (settings.adminPort) {
       // If in watch mode and behind a proxy, the /admin port will be set by Webpack and differ from the api one
       const currentDomain = ctx.request.header.host.split(':').shift()
-      ctx.redirect(`//${currentDomain}:${settings.adminPort}/bo/admin/settings/${pluginId}`);
+      ctx.redirect(`//${currentDomain}:${settings.adminPort}${basePath}/admin/settings/${pluginId}`);
     }
     else {
-      ctx.redirect(`/bo/admin/settings/${pluginId}`);
+      ctx.redirect(`${strapi.config.server.url}/admin/settings/${pluginId}`);
     }
   }
 

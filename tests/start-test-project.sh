@@ -1,6 +1,19 @@
 #!/bin/bash
 
-# rm -rf strapi-test-project/
+options=$@
+arguments=($options)
+NO_LOG=false
+
+index=0
+for argument in $options
+  do
+    index=`expr $index + 1`
+    case $argument in
+      --no-log) NO_LOG=true ;;
+      # -abc) echo "key $argument value ${arguments[index]}" ;;
+    esac
+  done
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR
 
@@ -9,14 +22,14 @@ cd $SCRIPT_DIR
 TEST_PROJECT_FOLDER="strapi-test-project"
 cd $TEST_PROJECT_FOLDER
 
+yarn --cwd $SCRIPT_DIR/.. pm2 kill
+yarn --cwd $SCRIPT_DIR/.. pm2 flush
+yarn --cwd $SCRIPT_DIR/.. pm2 ls
+yarn --cwd $SCRIPT_DIR/.. pm2 start tests/test-ecosystem.config.js
+# yarn --cwd $SCRIPT_DIR/.. pm2 start tests/test-ecosystem.config.js  --time --log $SCRIPT_DIR/logs # https://stackoverflow.com/a/72482794/2714285
 
-# TODO build if option is set
-# TODO watch on test files
-# TODO watch on server files
-# TODO watch on admin files with rebuild
-
-yarn build
-
-yarn pm2 start "PORT=13377 yarn develop"
 $SCRIPT_DIR/../node_modules/.bin/wait-port 13377
 
+if [ ! $NO_LOG ]; then
+  yarn --cwd $SCRIPT_DIR/.. pm2 logs --lines 1000 test-project
+fi

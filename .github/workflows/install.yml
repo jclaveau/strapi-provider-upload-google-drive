@@ -17,7 +17,7 @@ jobs:
         working-directory: strapi-project
 
       - name: Configure the plugin
-        run: cp tests/config/plugins.js strapi-project/config/plugins.js
+        run: cp -r tests/strapi-test-patch/* strapi-project
 
       - name: Build
         run: yarn build

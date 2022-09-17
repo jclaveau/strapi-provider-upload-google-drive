@@ -10,8 +10,8 @@
   },
   "main": "./provider",
   "scripts": {
-    "test": "yarn test:import-fixtures && yarn playwright test",
-    "test:codegen": "yarn playwright codegen localhost:13377/admin",
+    "test": "yarn test:import-fixtures && pm2 reload tests/test-ecosystem.config.js && wait-port 13377 && yarn playwright test ",
+    "test:codegen": "yarn playwright codegen -b firefox http://localhost:13377/admin",
     "test:create-project": "tests/create-test-project.sh",
     "test:import-fixtures": "tests/import_sqlite_fixtures.sh",
     "test:export-fixtures": "tests/export_sqlite_fixtures.sh",
@@ -47,6 +47,10 @@
   "devDependencies": {
     "@playwright/test": "^1.25.1",
     "create-strapi-app": "^4.3.6",
+    "dotenv": "^16.0.2",
+    "http-proxy": "^1.18.1",
+    "is-internet-available": "^3.1.0",
+    "pm2": "^5.2.0",
     "wait-port": "^0.3.0"
   }
 }
