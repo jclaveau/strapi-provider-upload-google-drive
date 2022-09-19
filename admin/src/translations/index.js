@@ -1,5 +1,4 @@
-import en from "./en.json";
-import fr from "./fr.json";
+import allTranslations from "./allTranslations";
 import {
   getTrad,
   getTradObject,
@@ -12,8 +11,4 @@ export {
   getMessage,
 }
 
-const trads = {
-	en,
-	fr,
-};
-export default trads;
+export default allTranslations;

@@ -18,11 +18,11 @@
   "pages.settings.credentials.redirectUri.hint": "Vous devrez ajouter une URI de redirection par environnementt/domaine (dev, prod, ...)",
 
   "pages.settings.credentials.clientId.label": "ID Client",
-  "pages.settings.credentials.clientId.placeholder": "",
+  "pages.settings.credentials.clientId.placeholder": " ",
   "pages.settings.credentials.clientId.hint": "Vous pouvez aussi le spécifier dans \"config/plugin.js\" entant que \"upload.config.providerOptions.clientId\"",
 
   "pages.settings.credentials.clientSecret.label": "Code secret du Client",
-  "pages.settings.credentials.clientSecret.placeholder": "",
+  "pages.settings.credentials.clientSecret.placeholder": " ",
   "pages.settings.credentials.clientSecret.hint": "Vous pouvez aussi le spécifier dans \"config/plugin.js\" entant que \"upload.config.providerOptions.clientId\" entry",
 
   "pages.settings.credentials.token.generatedOn": "Le jeton actuel a été généré le",

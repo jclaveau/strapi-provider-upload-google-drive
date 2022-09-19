@@ -41,11 +41,7 @@ module.exports = {
     return this.config
   },
 
-  getOAuth2Client(clientId, clientSecret) {
-    if (this.oAuth2Client != null) {
-      return this.oAuth2Client;
-    }
-
+  getOAuth2Client(clientId, clientSecret, redirectHost=null) {
     if (! clientId.match(/^.+$/)) {
       throw new Error(`Invalid Google Drive OAuth Client Id: ${JSON.stringify(clientId)}`)
     }
@@ -54,16 +50,22 @@ module.exports = {
       throw new Error(`Invalid Google Drive OAuth Client Secret: ${JSON.stringify(clientSecret)}`)
     }
 
+    if (strapi.config.server.url) {
+      // Configuration overides the host from the request
+      redirectHost = strapi.config.server.url
+    }
+
     this.oAuth2Client = new google.auth.OAuth2(
       clientId,
       clientSecret,
-      `${strapi.config.server.url}/${pluginId}/google-auth-redirect-uri`
+      `${redirectHost}/${pluginId}/google-auth-redirect-uri`
     );
 
+    // TODO do not store this instance?
     return this.oAuth2Client;
   },
 
-  getAuthUrl(adminPort=null) {
+  getAuthUrl() {
     if (this.oAuth2Client == null) {
       throw new Error('oAuth2Client missing. Please call getOAuth2Client() first')
     }

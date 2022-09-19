@@ -1,3 +1,5 @@
+tests/strapi-test-project
+
 # Logs
 logs
 *.log
@@ -102,3 +104,6 @@ dist
 
 # TernJS port file
 .tern-port
+/test-results/
+/playwright-report/
+/playwright/.cache/

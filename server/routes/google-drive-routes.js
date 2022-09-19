@@ -4,7 +4,9 @@ module.exports = [
     "path": "/",
     "handler": "googleDrive.index",
     "config": {
-      auth: false,
+      policies: [
+        'admin::isAuthenticatedAdmin',
+      ],
     }
   },
   {
@@ -12,7 +14,9 @@ module.exports = [
     "path": "/authUrl",
     "handler": "googleDrive.getAuthUrl",
     "config": {
-      auth: false,
+      policies: [
+        'admin::isAuthenticatedAdmin',
+      ],
     }
   },
   {
@@ -38,8 +42,9 @@ module.exports = [
     "path": "/file/:filename",
     "handler": "googleDrive.file",
     "config": {
-      auth: false,
-      "policies": []
+      policies: [
+        'admin::isAuthenticatedAdmin',
+      ],
     }
   },
   {
@@ -47,8 +52,9 @@ module.exports = [
     "path": "/google-drive-resulting-folder",
     "handler": "googleDrive.parseFolderPath",
     "config": {
-      auth: false,
-      "policies": []
+      policies: [
+        'admin::isAuthenticatedAdmin',
+      ],
     }
   },
 ];
